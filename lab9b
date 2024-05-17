@@ -1,0 +1,57 @@
+import random
+
+class Agent:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def move(self, grid):
+        empty_patches = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] is None]
+        if empty_patches:
+            new_position = random.choice(empty_patches)
+            grid[self.x][self.y] = None  # Empty the old position
+            self.x, self.y = new_position
+            grid[self.x][self.y] = self  # Move to the new position
+
+class World:
+    def __init__(self, size, num_agents):
+        self.size = size
+        self.grid = [[None for _ in range(size)] for _ in range(size)]
+        self.agents = self._create_agents(num_agents)
+
+    def _create_agents(self, num_agents):
+        agents = []
+        for _ in range(num_agents):
+            while True:
+                x, y = random.randint(0, self.size - 1), random.randint(0, self.size - 1)
+                if self.grid[x][y] is None:  # Ensure the spot is empty
+                    agent = Agent(x, y)
+                    self.grid[x][y] = agent
+                    agents.append(agent)
+                    break
+        return agents
+
+    def move_agents(self):
+        for agent in self.agents:
+            agent.move(self.grid)
+
+    def display(self):
+        for row in self.grid:
+            print(' '.join(['A' if cell else '.' for cell in row]))
+        print()
+
+def main():
+    world_size = 5  # Small grid
+    num_agents = 3  # Small number of agents
+    num_loops = 10  # Small number of loops
+
+    world = World(world_size, num_agents)
+    print("Initial world:")
+    world.display()
+
+    for _ in range(num_loops):
+        world.move_agents()
+        world.display()
+
+if __name__ == "__main__":
+    main()
